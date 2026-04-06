@@ -55,7 +55,10 @@ class ReadersWritersMonitor:
         """
         with self.condition:
             # TODO: Replace 'pass' with your logic
-            pass
+            while self.active_writers>0:
+                self.condition.wait()
+            self.active_readers+=1
+            print(f"[MONITOR]READER{reader_id}start reading|Active readers{self.active_readers}")
 
     def end_read(self, reader_id: int) -> None:
         """
@@ -68,7 +71,10 @@ class ReadersWritersMonitor:
         """
         with self.condition:
             # TODO: Replace 'pass' with your logic
-            pass
+            self.active_readers==-1
+            print(f"[MONITOR]READER{reader_id}end reading|Active readers{self.active_readers}")
+            if self.active_readers==0:
+                self.condition.notify_all()
 
     def start_write(self, writer_id: int) -> None:
         """
@@ -83,7 +89,14 @@ class ReadersWritersMonitor:
         """
         with self.condition:
             # TODO: Replace 'pass' with your logic
-            pass
+            self.active_writers+=1
+            while self.active_readers>0 or self.active_writers>0:
+                self.condition.wait()
+
+            self.waiting_writers-=1
+            self.active_writers=1
+            print(f"[MONITOR]Writer{writer_id}start writing|Waiting writers:{self.waiting_writers}")
+
 
     def end_write(self, writer_id: int) -> None:
         """
