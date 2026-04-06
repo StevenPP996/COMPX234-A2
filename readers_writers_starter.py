@@ -109,7 +109,9 @@ class ReadersWritersMonitor:
         """
         with self.condition:
             # TODO: Replace 'pass' with your logic
-            pass
+            self.active_writers=0
+            print(f"[MONITOR]Writer{writer_id}ends writing")
+            self.condition.notify_all()  
 
 # Donot Change this
 class Reader(threading.Thread):
@@ -170,24 +172,30 @@ def main() -> None:
 
     #TODO: Create at least 3 Reader threads.
     readers = [
-        Reader(reader_id=1, monitor=monitor)
+        Reader(reader_id=1, monitor=monitor),
+        Reader(reader_id=2, monitor=monitor),
+        Reader(reader_id=3, monitor=monitor)
     ]
     
     #TODO: Create at least 2 writer threads.
     writers = [
-        Writer(writer_id=1, monitor=monitor)
+        Writer(writer_id=1, monitor=monitor),
+        Writer(writer_id=2, monitor=monitor)
     ]
 
     all_threads = readers + writers
     
     # TODO: Start all threads
-
+    for thread in all_threads:
+        thread.start()
     
     # TODO: Wait for all threads to finish
-
-
+    for thread in all_threads:
+        thread.join()
     # TODO: Print final message that simulation completed
-
+    print("\n" + "="*50)
+    print("✅ Readers-Writers Simulation Completed Successfully!")
+    print("="*50)
 
 if __name__ == "__main__":
     main()
