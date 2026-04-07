@@ -54,9 +54,10 @@ class ReadersWritersMonitor:
         4. Print a useful log message.
         """
         with self.condition:
-            # TODO: Replace 'pass' with your logic
+            # wait until  no active writer are present
             while self.active_writers>0:
                 self.condition.wait()
+            #increase the count of active readers
             self.active_readers+=1
             print(f"[MONITOR]READER{reader_id}start reading|Active readers{self.active_readers}")
 
@@ -70,9 +71,10 @@ class ReadersWritersMonitor:
         3. If this was the last reader, wake waiting threads.
         """
         with self.condition:
-            # TODO: Replace 'pass' with your logic
+            #decrerase the count of active readers
             self.active_readers==-1
             print(f"[MONITOR]READER{reader_id}end reading|Active readers{self.active_readers}")
+            #notify all waiting threads if this is the last active reader      
             if self.active_readers==0:
                 self.condition.notify_all()
 
@@ -88,7 +90,7 @@ class ReadersWritersMonitor:
         4. Print a useful log message.
         """
         with self.condition:
-            # TODO: Replace 'pass' with your logic
+            # Wait until resource is available
             self.active_writers+=1
             while self.active_readers>0 or self.active_writers>0:
                 self.condition.wait()
